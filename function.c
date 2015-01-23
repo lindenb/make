@@ -681,6 +681,49 @@ func_addsuffix_addprefix (char *o, char **argv, const char *funcname)
   return o;
 }
 
+
+
+static char *
+func_dichotomy(char *o, char **argv, const char *funcname)
+{
+  const char *iter1 = argv[0];
+  const char *iter2 = argv[0];
+  int is_left = funcname[strlen(funcname)-1] == 'l';
+  int is_right = !is_left;
+  unsigned int count = 0;
+  unsigned int idx = 0;
+
+  int doneany = 0;
+  const char *p;
+  unsigned int len;
+
+  /* Find the maximum number of words we'll have.  */
+  while ((p = find_next_token (&iter1, NULL)) != 0)
+    {
+    ++count;
+    }
+  
+  if(count==0) return o;
+  
+  /* Find the maximum number of words we'll have.  */
+  while ((p = find_next_token (&iter2,  &len)) != 0)
+    {
+    if( (is_left && idx < count/2) || (is_right && idx >= count/2) )
+        {
+        o = variable_buffer_output (o, p, len);
+        o = variable_buffer_output (o, " ", 1);
+        doneany = 1;
+        }
+    ++idx;
+    }
+
+  if (doneany)
+    /* Kill last space.  */
+    --o;
+
+  return o;
+}
+
 static char *
 func_subst (char *o, char **argv, const char *funcname UNUSED)
 {
@@ -2270,6 +2313,8 @@ static struct function_table_entry function_table_init[] =
   FT_ENTRY ("addprefix",     2,  2,  1,  func_addsuffix_addprefix),
   FT_ENTRY ("addsuffix",     2,  2,  1,  func_addsuffix_addprefix),
   FT_ENTRY ("basename",      0,  1,  1,  func_basename_dir),
+  FT_ENTRY ("dichotomyl",    0,  1,  1,  func_dichotomy),
+  FT_ENTRY ("dichotomyr",    0,  1,  1,  func_dichotomy),
   FT_ENTRY ("dir",           0,  1,  1,  func_basename_dir),
   FT_ENTRY ("notdir",        0,  1,  1,  func_notdir_suffix),
   FT_ENTRY ("subst",         3,  3,  1,  func_subst),

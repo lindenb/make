@@ -1,0 +1,28 @@
+#                                                                    -*-perl-*-
+$description = "Test the dichotomyr function.";
+
+$details = "";
+
+
+open(MAKEFILE,"> $makefile");
+
+# The Contents of the MAKEFILE ...
+
+print MAKEFILE <<EOMAKE;
+string := \$(dichotomyr A B C D E)
+one: ; \@echo \$(string)
+
+EOMAKE
+
+close(MAKEFILE);
+
+
+# TEST 0
+
+&run_make_with_options($makefile, "", &get_logfile);
+$answer = "C D E\n";
+&compare_output($answer,&get_logfile(1));
+
+
+# This tells the test driver that the perl test script executed properly.
+1;

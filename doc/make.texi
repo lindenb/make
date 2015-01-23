@@ -6961,6 +6961,53 @@ instead of using the general form:
 $(patsubst %.o,%.c,$(objects))
 @end example
 
+@item $(dichotomyl @var{list})
+@cindex dichotomy
+@findex dichotomyl
+Split the list in two parts and return the left one.
+See @code{dichotomyr} for an example.
+
+@item $(dichotomyr @var{list})
+@cindex dichotomy
+@findex dichotomyr
+Split the list in two parts and return the right one.
+This function can be used with @code{dichotomyl} to implement a divide-and-conquer workflow.
+
+@noindent
+The following example use @code{dichotomyl}, @code{dichotomyr}, @code{call} and @code{eval} to analyse
+some data using a divide-and-conquer approach.
+
+@example
+.PHONY=all
+LETTERS=A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+
+define divideandconquer
+
+ifeq ($(words $(1)),"0")
+
+else ifeq ($(words $(1)),1)
+
+$(1)_$(1).txt :
+	echo -n "$(1)" > $$@@
+
+else
+
+$(firstword $(1))_$(lastword $(1)).txt: \
+	$(firstword $(dichotomyl $(1)))_$(lastword $(dichotomyl $(1))).txt \
+	$(firstword $(dichotomyr $(1)))_$(lastword $(dichotomyr $(1))).txt
+	cat $$^ > $$@@
+
+$$(eval $$(call divideandconquer,$(dichotomyl $(1))))
+$$(eval $$(call divideandconquer,$(dichotomyr $(1))))
+endif
+endef
+
+all: A_Z.txt
+	cat $<
+
+$(eval $(call divideandconquer,${LETTERS}))
+@end example
+
 @item $(strip @var{string})
 @cindex stripping whitespace
 @cindex whitespace, stripping
@@ -11786,6 +11833,14 @@ directive.
 Here is a summary of the built-in functions (@pxref{Functions}):
 
 @table @code
+@item $(dichotomyl @var{list1}@dots{})
+Split the list in two parts and return the left one
+@xref{Text Functions, , Functions for String Substitution and Analysis}.
+
+@item $(dichotomyr @var{list1}@dots{})
+Split the list in two parts and return the right one
+@xref{Text Functions, , Functions for String Substitution and Analysis}.
+
 @item $(subst @var{from},@var{to},@var{text})
 Replace @var{from} with @var{to} in @var{text}.@*
 @xref{Text Functions, , Functions for String Substitution and Analysis}.
