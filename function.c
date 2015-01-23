@@ -21,6 +21,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "job.h"
 #include "commands.h"
 #include "debug.h"
+#include "md5.h"
 
 #ifdef _AMIGA
 #include "amiga.h"
@@ -450,6 +451,33 @@ func_join (char *o, char **argv, const char *funcname UNUSED)
   return o;
 }
 
+
+static char *
+func_md5 (char *o, char **argv, const char *funcname UNUSED)
+{
+  const char *list_iterator = argv[0];
+  unsigned char digest[16];
+  const char *p;
+  unsigned int i,len, n=0;
+  CMD5* md5ptr = CMD5New();
+
+  while ((p = find_next_token (&list_iterator, &len)) != 0)
+    {
+      if( n > 0 ) CMD5Update(md5ptr," ",1);
+      CMD5Update(md5ptr,p,len);
+      ++n;
+    }
+  CMD5Finalize(md5ptr,digest);
+  for(i=0;i< 16;++i)
+    {
+    char tmp[3];
+    sprintf(tmp, "%02x", digest[i]);
+    o = variable_buffer_output (o, tmp,2);
+    }
+   
+  free(md5ptr);
+  return o;
+}
 
 static char *
 func_origin (char *o, char **argv, const char *funcname UNUSED)
@@ -2281,6 +2309,7 @@ static struct function_table_entry function_table_init[] =
   FT_ENTRY ("flavor",        0,  1,  1,  func_flavor),
   FT_ENTRY ("join",          2,  2,  1,  func_join),
   FT_ENTRY ("lastword",      0,  1,  1,  func_lastword),
+  FT_ENTRY ("md5",           0,  1,  1,  func_md5),
   FT_ENTRY ("patsubst",      3,  3,  1,  func_patsubst),
   FT_ENTRY ("realpath",      0,  1,  1,  func_realpath),
   FT_ENTRY ("shell",         0,  1,  1,  func_shell),

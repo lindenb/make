@@ -6991,6 +6991,23 @@ Replacing the variable reference @w{@samp{$(needs_made)}} with the
 function call @w{@samp{$(strip $(needs_made))}} in the @code{ifneq}
 directive would make it more robust.@refill
 
+
+@item $(md5 @var{string})
+@cindex md5
+@cindex checksum
+@cindex md5sum
+@cindex hash
+@findex md5
+Computes the MD5 sum of the words in @var{string}.
+
+The function @code{md5} can be useful to generate filenames.
+
+@example
+SRC=file.c load.c
+$(md5 ${SRC}): ${SRC}
+	touch $@@
+@end example
+
 @item $(findstring @var{find},@var{in})
 @findex findstring
 @cindex searching for strings
@@ -11796,6 +11813,10 @@ Replace words matching @var{pattern} with @var{replacement} in @var{text}.@*
 
 @item $(strip @var{string})
 Remove excess whitespace characters from @var{string}.@*
+@xref{Text Functions, , Functions for String Substitution and Analysis}.
+
+@item $(md5 @var{string})
+compute the md5 checksums in @var{string}.@*
 @xref{Text Functions, , Functions for String Substitution and Analysis}.
 
 @item $(findstring @var{find},@var{text})
